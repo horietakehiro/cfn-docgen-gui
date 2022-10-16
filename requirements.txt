@@ -1,0 +1,3 @@
+cfn-docgen
+cx_Freeze
+setuptools==59.0.1
