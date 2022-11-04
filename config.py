@@ -2,14 +2,19 @@ import os
 import json
 
 CACHE_DIR=os.path.join(os.path.expanduser("~"), ".cfn-docgen", "gui")
+LOG_FILE=os.path.join(os.path.expanduser("~"), ".cfn-docgen", "log", "cfn-docgen.log")
+
 os.makedirs(CACHE_DIR, exist_ok=True)
-CACHE_FILE=os.path.join(CACHE_DIR, "cache.json")
+CACHE_FILE=os.path.join(CACHE_DIR, "config.json")
+
 if not os.path.exists(CACHE_FILE):
     with open(CACHE_FILE, "w") as fp:
         json.dump(
             {
-                "prev_dir": "~",
-                "prev_fmt": "xlsx",
+                "OpenDirIfSuccess": True,
+                "OpenLogIfFail": True,
+                "PrevDir": "~",
+                "PrevFmt": "xlsx"    
             },
             fp,
         )
