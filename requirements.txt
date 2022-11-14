@@ -1,3 +1,7 @@
-cfn-docgen
+setuptools
+cx_Logging
+importlib-metadata
+lief
+packaging
 cx_Freeze
-setuptools==59.0.1
+cfn-docgen

@@ -18,7 +18,7 @@ executables = [
 
 setup(
     name = 'cfn-docgen-gui',
-    version='0.0.1',
+    version='0.1.0',
     description='GUI app for cfn-docgen',
     executables=executables,
     author = 'Takehiro Horie',
