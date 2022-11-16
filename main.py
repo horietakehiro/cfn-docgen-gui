@@ -1,5 +1,7 @@
 import time
 from tkinter import *
+from tkinter import font
+from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
 from pathlib import Path
@@ -37,10 +39,11 @@ def on_file_select():
     prev_dir = cache["PrevDir"]
 
     file = filedialog.askopenfile(
-        initialdir=prev_dir, filetypes=[("json", "*.json"), ("yaml", "*.yaml")],
+        initialdir=prev_dir, filetypes=[("json/yaml", "*.json;*.yaml")],
 
     )
     if file:
+        exec_button["state"] = "normal"
         selected_filename.set(str(Path(file.name)))
         cache = manage_cache("PrevDir", str(Path(os.path.dirname(file.name))))
 
@@ -53,10 +56,38 @@ def exec():
     # create process file
     root.after(0, monitor_exec_status, proc, "cfn-docgen is now running", dirname)
 
+def show_cli_version():
+    result = subprocess.run(
+        ["cfn-docgen", "--version"],
+        capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW,
+    )
+    title = "cfn-docgen version info"
+    if result.stderr:
+        messagebox.showerror(title, result.stderr)
+    else:
+        messagebox.showinfo(title, result.stdout)
+
+def install_cli():
+    result = subprocess.run(["pip", "install", "--upgrade", "cfn-docgen"])
+
+    title = "cfn-docgen install/update result"
+    if result.stderr:
+        messagebox.showerror(title, f"cfn-docgen install/update failed.\n{result.stderr}")
+    else:
+        result = subprocess.run(
+            ["cfn-docgen", "--version"],
+            capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW,
+        )
+        messagebox.showinfo(title, f"cfn docgen install/update succeeded.\n{result.stdout}")
+
 
 if __name__ == "__main__":
 
     root = Tk()
+
+    # default_font = font.nametofont("TkDefaultFont")
+    # default_font.configure(size=15)
+
     root.title('cfn-docgen')
     root.geometry("500x500")
 
@@ -102,8 +133,18 @@ if __name__ == "__main__":
     exec_button = ttk.Button(
         exec_frame, text="Run", width=10,
         command=exec,
+        state="disable",
     )
     exec_button.grid(row=2, column=0, sticky=(W))
 
 
+    menu_bar = Menu(root)
+    tool_menu = Menu(menu_bar, tearoff=0)
+    tool_menu.add_command(label="Install/Update", command=install_cli)
+    tool_menu.add_separator()
+    tool_menu.add_command(label="Version info", command=show_cli_version)
+    menu_bar.add_cascade(label="Tool", menu=tool_menu)
+
+
+    root.config(menu=menu_bar)
     root.mainloop()
