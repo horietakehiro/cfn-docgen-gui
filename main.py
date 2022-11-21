@@ -51,7 +51,11 @@ def exec():
 
     dirname = os.path.dirname(selected_filename.get())
 
-    args = ["cfn-docgen", "--in", selected_filename.get(), "--fmt", selected_fmt.get()]
+    args = [
+        "cfn-docgen", "--in", selected_filename.get(),
+        "--fmt", selected_fmt.get(),
+        "--style", selected_style.get(),
+    ]
     proc = subprocess.Popen(args)
     # create process file
     root.after(0, monitor_exec_status, proc, "cfn-docgen is now running", dirname)
@@ -97,6 +101,9 @@ if __name__ == "__main__":
     fmt_frame = ttk.Frame(root, padding=10)
     fmt_frame.grid(sticky=(N, W, S, E))
 
+    style_frame = ttk.Frame(root, padding=10)
+    style_frame.grid(sticky=(N, W, S, E))
+
     exec_frame = ttk.Frame(root, padding=10)
     exec_frame.grid(sticky=(N, W, S, E))
 
@@ -112,6 +119,7 @@ if __name__ == "__main__":
 
 
     cache = manage_cache()
+
     selected_fmt = StringVar(value=cache["PrevFmt"])
     fmt_buttons = []
     for i, fmt in enumerate(["xlsx", "csv", "md", "html"]):
@@ -126,6 +134,19 @@ if __name__ == "__main__":
         )
         fmt_buttons[i].grid(row=1, column=i)
 
+    selected_style = StringVar(value=cache["PrevStyle"])
+    style_buttons = []
+    for i, style in enumerate(["white", "blank", "all"]):
+        style_buttons.append(
+            ttk.Radiobutton(
+                style_frame,
+                text=style,
+                value=style,
+                variable=selected_style,
+                command=lambda: manage_cache("PrevStyle", selected_style.get())
+            )
+        )
+        style_buttons[i].grid(row=1, column=i)
 
     exec_message = StringVar()
     exec_message_label = ttk.Label(exec_frame, textvariable=exec_message)
